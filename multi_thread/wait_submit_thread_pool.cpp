@@ -72,9 +72,11 @@ public:
     ThreadPool(/* args */);
     ~ThreadPool();
     template<typename Functype>
+    //返回一个future允许等待线程池中的任务完成(调用get方法)
+    //不返回future的线程池则是不知道什么时候任务结束，只能等到join之后才知道
     std::future<typename std::result_of<Functype()>::type> submit(Functype f)
     {
-        typedef typename std::result_of<Functype()>::type> result_type;
+        typedef typename std::result_of<Functype()>::type result_type;
         std::packaged_task<result_type()> task(std::move(f));
         std::future<result_type> res(task.get_future());
         work_queue.emplace(std::move(task));
